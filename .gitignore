@@ -1,0 +1,9 @@
+# 忽略临时检索文件，保持 Commit 历史纯净
+data/retrieve.json
+
+# 忽略 Node 依赖
+node_modules/
+node_modules/*
+
+# 忽略系统文件
+.DS_Store

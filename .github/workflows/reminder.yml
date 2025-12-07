@@ -1,0 +1,59 @@
+name: Scheduled Calendar Sync
+
+on:
+  schedule:
+    # 保持原有的心跳频率，确保日历和 Git 经常同步
+    # 晨同步: 北京 08:30 -> UTC 00:30
+    - cron: '30 0 * * *'
+    # 午同步: 北京 13:30 -> UTC 05:30
+    - cron: '30 5 * * *'
+    # 晚同步: 北京 21:00 -> UTC 13:00
+    - cron: '0 13 * * *'
+  
+  # 允许手动点击按钮触发
+  workflow_dispatch:
+
+# 🟢 必须有写权限，因为 Prune 会修改文件
+permissions:
+  contents: write
+
+jobs:
+  sync_and_prune:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Sync to Feishu Calendar
+        env:
+          FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
+          FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
+          FEISHU_USER_ID: ${{ secrets.FEISHU_USER_ID }}
+          FEISHU_CALENDAR_ID: ${{ secrets.FEISHU_CALENDAR_ID }}
+        run: |
+          # 执行同步逻辑 (包含自动修剪过期数据)
+          python3 scripts/feishu_bot.py sync
+
+      - name: Commit Pruned Data
+        # 如果 Prune 删除了旧数据，Git 会检测到变更，我们需要提交这些变更
+        run: |
+          git config --global user.name "LifeOps Bot"
+          git config --global user.email "bot@lifeops.ai"
+          
+          if [[ -n $(git status -s data/schedule.json) ]]; then
+            git add data/schedule.json
+            git commit -m "🧹 Auto-Pruned Old Schedule Data"
+            git push
+            echo "✅ Pruned data committed."
+          else
+            echo "ℹ️ No data needed pruning."
+          fi
