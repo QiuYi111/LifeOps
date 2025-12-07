@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**"My calendar lives in Git, managed by Claude, synced to Feishu."**
+**" 专为连时间都懒得自己安排的懒狗设计."**
 
 [核心特性] • [架构设计] • [部署指南] • [使用手册]
 
@@ -19,7 +19,7 @@
 ### ✨ 核心特性
 
 - **🗣️ 自然语言交互**：直接对机器人说 *"明早 9 点有深度工作，别让人打扰"*，自动识别时间与意图。
-- **🧠 智能冲突仲裁**：内置 XML "宪法"，自动保护 **P0 (生存)** 和 **P1 (深度工作)** 任务，拒绝低优先级打扰。
+- **🧠 智能冲突仲裁**：个性化 Claude Code 指令，自动保护 **P0 (生存)** 和 **P1 (深度工作)** 任务，拒绝低优先级打扰。
 - **⚡️ 智能增量同步 (Smart Diff)**：
     - 采用 **"Diff & Patch"** 策略，仅在 Git 数据变更时触发同步。
     - **防轰炸机制**：自动识别已存在的日程，绝不重复发送邀请。
@@ -132,7 +132,7 @@ graph LR
 
 ## ⚙️ 进阶配置
 
-### 调整 AI 宪法 (`config/instructions.xml`)
+### 调整 AI 指令 (`config/instructions.xml`)
 
 这是 AI 的行为准则。您可以在此文件中定义：
 
@@ -162,4 +162,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 -----
 
-*Created with ❤️ by [Your Name]*
+*Created with ❤️ by Jingyi*
