@@ -141,23 +141,27 @@ class CalendarSDK:
 
     def list_events(self, start_ts, end_ts):
         if not self.calendar_id: self._ensure_bot_calendar()
+        
+        # 使用 iterator 进行自动翻页
         req = ListCalendarEventRequest.builder() \
             .calendar_id(self.calendar_id) \
             .start_time(str(start_ts)) \
             .end_time(str(end_ts)) \
+            .page_size(100) \
             .build()
-        
-        resp = self.client.calendar.v4.calendar_event.list(req)
-        if not resp.success(): return []
-        
+            
+        # 修正：使用 lark.iter 遍历所有页
         events = []
-        if resp.data.items:
-            for item in resp.data.items:
+        try:
+            for item in lark.iter.calendar.v4.calendar_event.list(self.client, req):
                 events.append({
                     "event_id": item.event_id,
                     "summary": item.summary,
                     "description": item.description,
-                    "start_time": item.start_time.timestamp,
-                    "end_time": item.end_time.timestamp
+                    "start_time": int(item.start_time.timestamp), # 确保转为int
+                    "end_time": int(item.end_time.timestamp)
                 })
+        except Exception as e:
+            print(f"⚠️ Error listing events: {e}")
+            
         return events
